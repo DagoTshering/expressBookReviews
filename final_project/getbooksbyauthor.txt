@@ -1,4 +1,4 @@
-curl -s http://localhost:5000/author/Jane              0X0P+0usten
+curl -s http://localhost:5000/author/Jane%20Austen
 {
   "8": {
     "author": "Jane Austen",
