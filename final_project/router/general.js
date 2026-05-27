@@ -96,21 +96,35 @@ public_users.get('/author/:author', async function (req, res) {
 });
 
 // Get all books based on title
-public_users.get('/title/:title',function (req, res) {
+public_users.get('/title/:title', async function (req, res) {
   const title = req.params.title;
-  const bookKeys = Object.keys(books);
-  const matchingBooks = {};
+  if (req.headers["x-async-request"] === "true") {
+    const bookKeys = Object.keys(books);
+    const matchingBooks = {};
 
-  bookKeys.forEach((key) => {
-    if (books[key].title === title) {
-      matchingBooks[key] = books[key];
+    bookKeys.forEach((key) => {
+      if (books[key].title === title) {
+        matchingBooks[key] = books[key];
+      }
+    });
+
+    if (Object.keys(matchingBooks).length > 0) {
+      return res.status(200).json(matchingBooks);
     }
-  });
-
-  if (Object.keys(matchingBooks).length > 0) {
-    return res.status(200).send(JSON.stringify(matchingBooks, null, 2));
+    return res.status(404).json({message: "No books found for this title"});
   }
-  return res.status(404).json({message: "No books found for this title"});
+
+  try {
+    const response = await axios.get(`http://localhost:5000/title/${encodeURIComponent(title)}`, {
+      headers: {"x-async-request": "true"},
+    });
+    return res.status(200).send(JSON.stringify(response.data, null, 2));
+  } catch (error) {
+    if (error.response) {
+      return res.status(error.response.status).json(error.response.data);
+    }
+    return res.status(500).json({message: "Error retrieving books by title"});
+  }
 });
 
 //  Get book review
