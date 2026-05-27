@@ -1,2 +1,2 @@
 curl -s -X PUT "http://localhost:5000/customer/auth/review/1?review=Great%20book" -b /tmp/task8_cookies.txt
-{"message":"Review added/updated","reviews":{"task8user":"Great book"}}
+{"message":"Review added/updated successfully","reviews":{"task8user":"Great book"}}
